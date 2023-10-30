@@ -27,10 +27,9 @@ public class ControladorPersona {
         return repositorioPersona.save(persona);
     }
 
-    // TO-DO: Implementar los métodos putPersona y patchPersona
     @PatchMapping("/api/personas/{id}")
     public Mono<Persona> patchPersona(@PathVariable Integer id, @RequestBody Persona persona) {
-        return null;
+        return repositorioPersona.findAndUpdate(id, persona);
     }
 
     @DeleteMapping("/api/personas/{id}")
