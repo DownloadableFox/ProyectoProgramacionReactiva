@@ -8,33 +8,33 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
+@RequestMapping("/api/personas")
 public class ControladorPersona {
     @Autowired
     private RepositorioPersona repositorioPersona;
 
-    @GetMapping("/api/personas")
+    @GetMapping("/")
     public Flux<Persona> getPersonas() {
         return repositorioPersona.findAll();
     }
 
-    @GetMapping("/api/personas/{id}")
+    @GetMapping("/{id}")
     public Mono<Persona> getPersona(@PathVariable Integer id) {
         return repositorioPersona.findById(id);
     }
 
-    @PostMapping("/api/personas")
+    @PostMapping("/")
     public Mono<Persona> postPersona(@RequestBody Persona persona) {
         return repositorioPersona.save(persona);
     }
 
-    @PatchMapping("/api/personas/{id}")
+    @PatchMapping("/{id}")
     public Mono<Persona> patchPersona(@PathVariable Integer id, @RequestBody Persona persona) {
         return repositorioPersona.findAndUpdate(id, persona);
     }
 
-    @DeleteMapping("/api/personas/{id}")
+    @DeleteMapping("/{id}")
     public Mono<Void> deletePersona(@PathVariable Integer id) {
         return repositorioPersona.deleteById(id);
     }
-
 }
