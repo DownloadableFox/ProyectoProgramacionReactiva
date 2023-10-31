@@ -23,7 +23,7 @@ CREATE TABLE materia (
 
 CREATE TABLE curso (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    numero varchar NOT NULL,
+    numero varchar UNIQUE NOT NULL,
     materia_id integer NOT NULL,
     profesor_id integer NOT NULL,
     fecha_inicio integer,

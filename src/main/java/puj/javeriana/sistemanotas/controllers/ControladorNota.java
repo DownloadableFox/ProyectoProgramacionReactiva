@@ -10,39 +10,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import puj.javeriana.sistemanotas.models.Curso;
-import puj.javeriana.sistemanotas.repositories.RepositorioCurso;
+import puj.javeriana.sistemanotas.models.Nota;
+import puj.javeriana.sistemanotas.repositories.RepositorioNota;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/cursos")
-public class ControladorCurso {
+@RequestMapping("/api/notas")
+public class ControladorNota {
     @Autowired
-    private RepositorioCurso repositorioCurso;
+    private RepositorioNota repositorioNota;
 
     @GetMapping("/")
-    public Flux<Curso> getCursos() {
-        return repositorioCurso.findAll();
+    public Flux<Nota> getNotas() {
+        return repositorioNota.findAll();
     }
 
     @GetMapping("/{id}")
-    public Mono<Curso> getCurso(@PathVariable Integer id) {
-        return repositorioCurso.findById(id);
+    public Mono<Nota> getNota(@PathVariable Integer id) {
+        return repositorioNota.findById(id);
     }
 
     @PostMapping("/")
-    public Mono<Curso> postCurso(@RequestBody Curso curso) {
-        return repositorioCurso.save(curso);
+    public Mono<Nota> postNota(@RequestBody Nota nota) {
+        return repositorioNota.save(nota);
     }
 
     @PatchMapping("/{id}")
-    public Mono<Curso> patchCurso(@PathVariable Integer id, @RequestBody Curso curso) {
-        return repositorioCurso.findAndUpdate(id, curso);
+    public Mono<Nota> patchNota(@PathVariable Integer id, @RequestBody Nota nota) {
+        return repositorioNota.findAndUpdate(id, nota);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteCurso(@PathVariable Integer id) {
-        return repositorioCurso.deleteById(id);
+    public Mono<Void> deleteNota(@PathVariable Integer id) {
+        return repositorioNota.deleteById(id);
     }
 }

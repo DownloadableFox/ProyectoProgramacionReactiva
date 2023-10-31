@@ -14,24 +14,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table
-public class Curso {
+public class Nota {
     @Id
     private Integer id;
-    private String numero;
 
-    @Column("materia_id")
-    @JsonProperty("materia_id")
-    private Integer materiaId;
+    @Column("curso_id")
+    @JsonProperty("curso_id")
+    private Integer cursoId;
 
-    @Column("profesor_id")
-    @JsonProperty("profesor_id")
-    private Integer profesorId;
+    @Column("estudiante_id")
+    @JsonProperty("estudiante_id")
+    private Integer estudianteId;
 
-    @Column("fecha_inicio")
-    @JsonProperty("fecha_inicio")
-    private Integer fechaInicio;
-
-    @Column("fecha_fin")
-    @JsonProperty("fecha_fin")
-    private Integer fechaFin;
+    private String observacion;
+    private Double valor;
 }
