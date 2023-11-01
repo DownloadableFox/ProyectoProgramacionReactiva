@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import puj.javeriana.sistemanotas.models.Materia;
@@ -22,8 +23,12 @@ public class ControladorMateria {
     private RepositorioMateria repositorioMateria;
 
     @GetMapping("/")
-    public Flux<Materia> getMaterias() {
-        return repositorioMateria.findAll();
+    public Flux<Materia> getMaterias(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        return repositorioMateria
+                .findAll()
+                .skip((page - 1) * limit)
+                .take(limit);
     }
 
     @GetMapping("/{id}")

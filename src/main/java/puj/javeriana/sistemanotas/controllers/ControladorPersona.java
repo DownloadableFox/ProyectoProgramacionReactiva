@@ -14,8 +14,12 @@ public class ControladorPersona {
     private RepositorioPersona repositorioPersona;
 
     @GetMapping("/")
-    public Flux<Persona> getPersonas() {
-        return repositorioPersona.findAll();
+    public Flux<Persona> getPersonas(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        return repositorioPersona
+                .findAll()
+                .skip((page - 1) * limit)
+                .take(limit);
     }
 
     @GetMapping("/{id}")

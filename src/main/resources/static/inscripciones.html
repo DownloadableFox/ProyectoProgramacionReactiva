@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Notas - Inscripciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="bg-neutral-200 w-screen h-screen flex justify-center items-center">
+        <div id="normal" class="flex flex-row">
+            <div id="add" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Agregar Persona</h1>
+                <form class="mb-4">
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="nombre">
+                            Nombre
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="text" name="nombre" id="nombre"
+                            placeholder="Juanito" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="apellido">
+                            Apellido
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="text" name="apellido" id="apellido"
+                            placeholder="Perez" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="correo">
+                            Correo
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="email" name="correo" id="correo"
+                            placeholder="juanito@email.com" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="rol">
+                            Rol
+                        </label>
+                        <select class="border py-2 px-3 text-grey-800" name="rol" id="rol" required>
+                            <option value="E">Estudiante</option>
+                            <option value="P">Profesor</option>
+                        </select>
+                    </div>
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Agregar
+                    </button>
+                </form>
+            </div>
+            <div id="data" class="bg-white rounded-lg shadow-lg p-8 mx-2 flex-1">
+                <h1 class="text-2xl font-bold mb-4">Personas</h1>
+                <div class="overflow-scroll h-96">
+                    <table class="table-auto w-full mb-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Nombre</th>
+                                <th class="px-4 py-2">Apellido</th>
+                                <th class="px-4 py-2">Correo</th>
+                                <th class="px-4 py-2">Rol</th>
+                                <th class="px-4 py-2">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="especifico" class="flex flex-row hidden">
+            <div id="modify" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Modificar Persona</h1>
+                <h2 id="id" class="text-xl font-bold mb-4">ID: #unknown</h1>
+                    <form class="mb-4">
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="nombre">
+                                Nombre
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="text" name="nombre" id="nombre"
+                                placeholder="Juanito" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="apellido">
+                                Apellido
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="text" name="apellido" id="apellido"
+                                placeholder="Perez" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="correo">
+                                Correo
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="email" name="correo" id="correo"
+                                placeholder="juanito@email.com" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="rol">
+                                Rol
+                            </label>
+                            <select class="border py-2 px-3 text-grey-800" name="rol" id="rol" required>
+                                <option value="E">Estudiante</option>
+                                <option value="P">Profesor</option>
+                            </select>
+                        </div>
+                        <button id="guardar"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Guardar
+                        </button>
+
+                        <button id="cancelar"
+                            class="bg-neutral-500 hover:bg-neutral-700 text-white font-bold py-2 px-4 rounded">
+                            Cancelar
+                        </button>
+
+                    </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function verPersona(id) {
+        obtenerPersona(id).then(persona => {
+            const divEspecifico = document.querySelector('#especifico');
+            const divNormal = document.querySelector('#normal');
+
+            const idElement = divEspecifico.querySelector('#id');
+            idElement.innerHTML = `ID: #${persona.id}`;
+
+            const nombreElement = divEspecifico.querySelector('#nombre');
+            nombreElement.value = persona.nombre;
+
+            const apellidoElement = divEspecifico.querySelector('#apellido');
+            apellidoElement.value = persona.apellido;
+
+            const correoElement = divEspecifico.querySelector('#correo');
+            correoElement.value = persona.correo;
+
+            const rolElement = divEspecifico.querySelector('#rol');
+            rolElement.value = persona.rol;
+
+            divNormal.classList.add('hidden');
+            divEspecifico.classList.remove('hidden');
+        });
+    }
+
+    function listarPersonas(data) {
+        const div = document.querySelector('#data');
+
+        if (!data || data.length === 0) {
+            div.classList.add('hidden');
+        } else {
+            div.classList.remove('hidden');
+        }
+
+        const tbody = div.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(persona => {
+            const element = `
+                <tr>
+                    <td class="border px-4 py-2">${persona.nombre}</td>
+                    <td class="border px-4 py-2">${persona.apellido}</td>
+                    <td class="border px-4 py-2">${persona.correo}</td>
+                    <td class="border px-4 py-2">${persona.rol}</td>
+                    <td class="border px-4 py-2">
+                        <button id="modify-${persona.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Ver
+                        </button>
+                        <button id="del-${persona.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            tbody.insertAdjacentHTML('beforeend', element);
+
+            const btnModify = document.querySelector(`#modify-${persona.id}`);
+            btnModify.addEventListener('click', () => {
+                verPersona(persona.id).then(actualizar);
+            });
+
+            const btnDelete = document.querySelector(`#del-${persona.id}`);
+            btnDelete.addEventListener('click', () => {
+                removerPersona(persona.id).then(actualizar);
+            });
+        });
+    }
+
+    function actualizar() {
+        const page = 1;
+        const limit = 10;
+        obtenerPersonas(page, limit).then(listarPersonas);
+    }
+
+    function main() {
+        const divNormal = document.querySelector('#normal');
+        const crearForm = divNormal.querySelector('form');
+
+        crearForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(crearForm);
+            const data = Object.fromEntries(formData);
+
+            crearPersona(data).then(actualizar);
+        });
+
+        const divEspecifico = document.querySelector('#especifico');
+        const modificarForm = divEspecifico.querySelector('form');
+
+        const btnCancelar = divEspecifico.querySelector('#cancelar');
+        const btnGuardar = divEspecifico.querySelector('#guardar');
+
+        modificarForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        btnGuardar.addEventListener('click', () => {
+            const formData = new FormData(modificarForm);
+            const data = Object.fromEntries(formData);
+
+            const id = divEspecifico.querySelector('#id').innerHTML.split('#')[1];
+            actualizarPersona(id, data).then(actualizar);
+
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        actualizar();
+    }
+
+    main();
+</script>
+
+</html>

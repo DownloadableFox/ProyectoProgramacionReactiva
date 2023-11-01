@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import puj.javeriana.sistemanotas.models.Curso;
 import puj.javeriana.sistemanotas.repositories.RepositorioCurso;
+import puj.javeriana.sistemanotas.repositories.RepositorioCursoProfesor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,9 +23,16 @@ public class ControladorCurso {
     @Autowired
     private RepositorioCurso repositorioCurso;
 
+    @Autowired
+    private RepositorioCursoProfesor repositorioCursoProfesor;
+
     @GetMapping("/")
-    public Flux<Curso> getCursos() {
-        return repositorioCurso.findAll();
+    public Flux<Curso> getCursos(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        return repositorioCurso
+                .findAll()
+                .skip((page - 1) * limit)
+                .take(limit);
     }
 
     @GetMapping("/{id}")
@@ -33,16 +42,29 @@ public class ControladorCurso {
 
     @PostMapping("/")
     public Mono<Curso> postCurso(@RequestBody Curso curso) {
-        return repositorioCurso.save(curso);
+        return repositorioCurso
+                .save(curso)
+                .flatMap(cursoGuardado -> repositorioCursoProfesor
+                        .createByCurso(cursoGuardado)
+                        .thenReturn(cursoGuardado));
     }
 
     @PatchMapping("/{id}")
     public Mono<Curso> patchCurso(@PathVariable Integer id, @RequestBody Curso curso) {
-        return repositorioCurso.findAndUpdate(id, curso);
+        return repositorioCurso
+                .findAndUpdate(id, curso)
+                .flatMap(cursoGuardado -> repositorioCursoProfesor
+                        .updateByCurso(cursoGuardado)
+                        .thenReturn(cursoGuardado));
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> deleteCurso(@PathVariable Integer id) {
-        return repositorioCurso.deleteById(id);
+        return repositorioCurso
+                .findById(id)
+                .flatMap(curso -> repositorioCursoProfesor
+                        .deleteByCurso(curso)
+                        .thenReturn(curso))
+                .flatMap(curso -> repositorioCurso.deleteById(curso.getId()));
     }
 }

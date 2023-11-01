@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Notas - Materias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="bg-neutral-200 w-screen h-screen flex justify-center items-center">
+        <div id="normal" class="flex flex-row">
+            <div id="add" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Agregar Materia</h1>
+                <form class="mb-4">
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="nombre">
+                            Nombre
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="text" name="nombre" id="nombre"
+                            placeholder="Calculo Diferencial" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="creditos">
+                            Creditos
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="number" name="creditos" id="creditos"
+                            placeholder="1-4" min="1" max="4" required>
+                    </div>
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Agregar
+                    </button>
+                </form>
+            </div>
+            <div id="data" class="bg-white rounded-lg shadow-lg p-8 mx-2 flex-1">
+                <h1 class="text-2xl font-bold mb-4">Materias</h1>
+                <div class="overflow-scroll h-96">
+                    <table class="table-auto w-full mb-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Nombre</th>
+                                <th class="px-4 py-2">Creditos</th>
+                                <th class="px-4 py-2">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="especifico" class="flex flex-row hidden">
+            <div id="modify" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Modificar Materia</h1>
+                <h2 id="id" class="text-xl font-bold mb-4">ID: #unknown</h1>
+                    <form class="mb-4">
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="nombre">
+                                Nombre
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="text" name="nombre" id="nombre"
+                                placeholder="Juanito" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="creditos">
+                                Creditos
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="number" name="creditos" id="creditos"
+                                placeholder="1-4" min="1" max="4" required>
+                        </div>
+                        <button id="guardar"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Guardar
+                        </button>
+
+                        <button id="cancelar"
+                            class="bg-neutral-500 hover:bg-neutral-700 text-white font-bold py-2 px-4 rounded">
+                            Cancelar
+                        </button>
+
+                    </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function verMateria(id) {
+        obtenerMateria(id).then(materia => {
+            const divEspecifico = document.querySelector('#especifico');
+            const divNormal = document.querySelector('#normal');
+
+            const idElement = divEspecifico.querySelector('#id');
+            idElement.innerHTML = `ID: #${materia.id}`;
+
+            const nombreElement = divEspecifico.querySelector('#nombre');
+            nombreElement.value = materia.nombre;
+
+            const creditosElement = divEspecifico.querySelector('#creditos');
+            creditosElement.value = materia.creditos;
+
+            divNormal.classList.add('hidden');
+            divEspecifico.classList.remove('hidden');
+        });
+    }
+
+    function listarMaterias(data) {
+        const div = document.querySelector('#data');
+
+        if (!data || data.length === 0) {
+            div.classList.add('hidden');
+        } else {
+            div.classList.remove('hidden');
+        }
+
+        const tbody = div.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(materia => {
+            const element = `
+                        <tr>
+                            <td class="border px-4 py-2">${materia.nombre}</td>
+                            <td class="border px-4 py-2">${materia.creditos}</td>
+                            <td class="border px-4 py-2">
+                                <button id="modify-${materia.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Ver
+                                </button>
+                                <button id="del-${materia.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+            tbody.insertAdjacentHTML('beforeend', element);
+
+            const btnModify = document.querySelector(`#modify-${materia.id}`);
+            btnModify.addEventListener('click', () => {
+                verMateria(materia.id).then(actualizar);
+            });
+
+            const btnDelete = document.querySelector(`#del-${materia.id}`);
+            btnDelete.addEventListener('click', () => {
+                removerMateria(materia.id).then(actualizar);
+            });
+        });
+    }
+
+    function actualizar() {
+        const page = 1;
+        const limit = 10;
+        obtenerMaterias(page, limit).then(listarMaterias);
+    }
+
+    function main() {
+        const divNormal = document.querySelector('#normal');
+        const crearForm = divNormal.querySelector('form');
+
+        crearForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(crearForm);
+            const data = Object.fromEntries(formData);
+
+            crearMateria(data).then(actualizar);
+        });
+
+        const divEspecifico = document.querySelector('#especifico');
+        const modificarForm = divEspecifico.querySelector('form');
+
+        const btnCancelar = divEspecifico.querySelector('#cancelar');
+        const btnGuardar = divEspecifico.querySelector('#guardar');
+
+        modificarForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        btnGuardar.addEventListener('click', () => {
+            const formData = new FormData(modificarForm);
+            const data = Object.fromEntries(formData);
+
+            const id = divEspecifico.querySelector('#id').innerHTML.split('#')[1];
+            actualizarMateria(id, data).then(actualizar);
+
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        actualizar();
+    }
+
+    main();
+</script>
+
+</html>

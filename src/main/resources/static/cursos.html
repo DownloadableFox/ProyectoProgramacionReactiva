@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Notas - Cursos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="bg-neutral-200 w-screen h-screen flex justify-center items-center">
+        <div id="normal" class="flex flex-row">
+            <div id="add" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Agregar Persona</h1>
+                <form class="mb-4">
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="numero">
+                            Numero
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="text" name="numero" id="numero"
+                            placeholder="PA-101" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="materia_id">
+                            Materia
+                        </label>
+                        <select class="border py-2 px-3 text-grey-800" name="materia_id" id="materia_id"
+                            required></select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="profesor_id">
+                            Profesor
+                        </label>
+                        <select class="border py-2 px-3 text-grey-800" name="profesor_id" id="profesor_id"
+                            required></select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="fecha_inicio">
+                            Fecha de inicio
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="date" name="fecha_inicio" id="fecha_inicio"
+                            required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="fecha_fin">
+                            Fecha de fin
+                        </label>
+                        <input class="border py-2 px-3 text-grey-800" type="date" name="fecha_fin" id="fecha_fin"
+                            required>
+                    </div>
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Agregar
+                    </button>
+                </form>
+            </div>
+            <div id="data" class="bg-white rounded-lg shadow-lg p-8 mx-2 flex-1">
+                <h1 class="text-2xl font-bold mb-4">Cursos</h1>
+                <div class="overflow-scroll h-96">
+                    <table class="table-auto w-full mb-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Numero</th>
+                                <th class="px-4 py-2">Materia ID</th>
+                                <th class="px-4 py-2">Profesor ID</th>
+                                <th class="px-4 py-2">Fecha de inicio</th>
+                                <th class="px-4 py-2">Fecha de fin</th>
+                                <th class="px-4 py-2">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="especifico" class="flex flex-row hidden">
+            <div id="modify" class="bg-white rounded-lg shadow-lg p-8 mx-2 w-96">
+                <h1 class="text-2xl font-bold mb-4">Modificar Curso</h1>
+                <h2 id="id" class="text-xl font-bold mb-4">ID: #unknown</h1>
+                    <form class="mb-4">
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="numero">
+                                Numero
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="text" name="numero" id="numero"
+                                placeholder="101" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="materia_id">
+                                Materia
+                            </label>
+                            <select class="border py-2 px-3 text-grey-800" name="materia_id" id="materia_id"
+                                required></select>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="profesor_id">
+                                Profesor
+                            </label>
+                            <select class="border py-2 px-3 text-grey-800" name="profesor_id" id="profesor_id"
+                                required></select>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="fecha_inicio">
+                                Fecha de inicio
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="date" name="fecha_inicio"
+                                id="fecha_inicio" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label class="mb-2 font-bold text-lg text-gray-900" for="fecha_fin">
+                                Fecha de fin
+                            </label>
+                            <input class="border py-2 px-3 text-grey-800" type="date" name="fecha_fin" id="fecha_fin"
+                                required>
+                        </div>
+                        <button id="guardar"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Guardar
+                        </button>
+
+                        <button id="cancelar"
+                            class="bg-neutral-500 hover:bg-neutral-700 text-white font-bold py-2 px-4 rounded">
+                            Cancelar
+                        </button>
+
+                    </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    // Vista
+    function verCurso(id) {
+        obtenerCurso(id).then(curso => {
+            const divEspecifico = document.querySelector('#especifico');
+            const divNormal = document.querySelector('#normal');
+
+            const idElement = divEspecifico.querySelector('#id');
+            idElement.innerHTML = `ID: #${curso.id}`;
+
+            const nombreElement = divEspecifico.querySelector('#numero');
+            nombreElement.value = curso.numero;
+
+            const materiaElement = divEspecifico.querySelector('#materia_id');
+            materiaElement.value = curso.materia_id;
+
+            const profesorElement = divEspecifico.querySelector('#profesor_id');
+            profesorElement.value = curso.profesor_id;
+
+            const fechaInicioElement = divEspecifico.querySelector('#fecha_inicio');
+            fechaInicioElement.value = curso.fecha_inicio;
+
+            const fechaFinElement = divEspecifico.querySelector('#fecha_fin');
+            fechaFinElement.value = curso.fecha_fin;
+
+            divNormal.classList.add('hidden');
+            divEspecifico.classList.remove('hidden');
+        });
+    }
+
+    function listarCursos(data) {
+        const div = document.querySelector('#data');
+
+        if (!data || data.length === 0) {
+            div.classList.add('hidden');
+        } else {
+            div.classList.remove('hidden');
+        }
+
+        const tbody = div.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(async curso => {
+            const fechaIncio = new Date(curso.fecha_inicio * 1000);
+            const fechaFin = new Date(curso.fecha_fin * 1000);
+
+            const profesor = await obtenerPersona(curso.profesor_id);
+            const materia = await obtenerMateria(curso.materia_id);
+
+            const element = `
+                        <tr>
+                            <td class="border px-4 py-2">${curso.numero}</td>
+                            <td class="border px-4 py-2">${materia.nombre}</td>
+                            <td class="border px-4 py-2">${profesor.nombre} ${profesor.apellido}</td>
+                            <td class="border px-4 py-2">${fechaIncio.toLocaleDateString()}</td>
+                            <td class="border px-4 py-2">${fechaFin.toLocaleDateString()}</td>
+                            <td class="border px-4 py-2">
+                                <button id="modify-${curso.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Ver
+                                </button>
+                                <button id="del-${curso.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+            tbody.insertAdjacentHTML('beforeend', element);
+
+            const btnModify = document.querySelector(`#modify-${curso.id}`);
+            btnModify.addEventListener('click', () => {
+                verCurso(curso.id).then(actualizar);
+            });
+
+            const btnDelete = document.querySelector(`#del-${curso.id}`);
+            btnDelete.addEventListener('click', () => {
+                removerCurso(curso.id).then(actualizar);
+            });
+        });
+    }
+
+    async function actualizar() {
+        const page = 1;
+        const limit = 100;
+
+        const profesores = await obtenerPersonas(page, limit)
+            .then(personas => personas.filter(persona => persona.rol === 'P'));
+
+        const materias = await obtenerMaterias(page, limit);
+
+        const divNormal = document.querySelector('#normal');
+        const selectProfesorN = divNormal.querySelector('#profesor_id');
+        const selectMateriaN = divNormal.querySelector('#materia_id');
+
+        const divEspecifico = document.querySelector('#especifico');
+        const selectProfesorE = divEspecifico.querySelector('#profesor_id');
+        const selectMateriaE = divEspecifico.querySelector('#materia_id');
+
+        selectProfesorN.innerHTML = '';
+        selectProfesorE.innerHTML = '';
+
+        profesores.forEach(profesor => {
+            const option = document.createElement('option');
+            option.value = profesor.id;
+            option.innerHTML = `${profesor.nombre} ${profesor.apellido}`;
+
+            selectProfesorN.appendChild(option);
+            selectProfesorE.appendChild(option.cloneNode(true));
+        });
+
+        selectMateriaN.innerHTML = '';
+        selectMateriaE.innerHTML = '';
+
+        materias.forEach(materia => {
+            const option = document.createElement('option');
+            option.value = materia.id;
+            option.innerHTML = materia.nombre;
+
+            selectMateriaN.appendChild(option);
+            selectMateriaE.appendChild(option.cloneNode(true));
+        });
+
+        obtenerCursos(page, limit).then(listarCursos);
+    }
+
+    function main() {
+        const divNormal = document.querySelector('#normal');
+        const crearForm = divNormal.querySelector('form');
+
+        crearForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(crearForm);
+            const data = Object.fromEntries(formData);
+
+            data.fecha_inicio = new Date(data.fecha_inicio).setHours(0, 0, 0, 0) / 1000;
+            data.fecha_fin = new Date(data.fecha_fin).setHours(0, 0, 0, 0) / 1000;
+
+            data.materia_id = parseInt(data.materia_id);
+            data.profesor_id = parseInt(data.profesor_id);
+
+            crearCurso(data).then(actualizar);
+        });
+
+        const divEspecifico = document.querySelector('#especifico');
+        const modificarForm = divEspecifico.querySelector('form');
+
+        const btnCancelar = divEspecifico.querySelector('#cancelar');
+        const btnGuardar = divEspecifico.querySelector('#guardar');
+
+        modificarForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        btnGuardar.addEventListener('click', () => {
+            const formData = new FormData(modificarForm);
+            const data = Object.fromEntries(formData);
+
+            data.fecha_inicio = new Date(data.fecha_inicio).setHours(0, 0, 0, 0) / 1000;
+            data.fecha_fin = new Date(data.fecha_fin).setHours(0, 0, 0, 0) / 1000;
+
+            data.materia_id = parseInt(data.materia_id);
+            data.profesor_id = parseInt(data.profesor_id);
+
+            const id = divEspecifico.querySelector('#id').innerHTML.split('#')[1];
+            actualizarCurso(id, data).then(actualizar);
+
+            divNormal.classList.remove('hidden');
+            divEspecifico.classList.add('hidden');
+        });
+
+        actualizar();
+    }
+
+    main();
+</script>
+
+</html>
